@@ -1,0 +1,33 @@
+server:
+    port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:9090/eureka/
+
+zuul:
+  #Service will be mapped under the /api URI
+  prefix: /api
+#  Uncomment to disable auto-registering all services read from Eureka
+  ignoredServices: '*'
+  routes:
+    test:
+      path: /redirect/**
+      url: http://google.com
+    fr-chat-service:
+      path: /fr/**
+      serviceId: FR-CHAT-SERVICE
+    us-chat-service:
+      path: /us/**
+      serviceId: US-CHAT-SERVICE
+
+spring:
+  application:
+    name: zuul-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

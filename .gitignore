@@ -6,3 +6,13 @@ gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+
+chat-web-client/node_modules/
+
+chat-api/\.idea/
+
+gateway-server/out/
+
+chat-api/out/
+
+discovery-server/out/
