@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import { helloWorld, reset, sendMessage } from './../actions'
+import md5 from 'md5-hash'
 
 class Hello extends React.Component {
 
@@ -10,6 +11,24 @@ class Hello extends React.Component {
     this.sendMessageClick = this.sendMessageClick.bind(this);
     this.userTextInput = React.createRef();
     this.messageTextInput = React.createRef();
+    this.initChat();
+  }
+
+  initChat() {
+    const { onSendMessage } = this.props;
+    fetch('http://localhost:8080/api/fr/chats', {
+      method: 'GET',
+      headers: this.getHeaders()
+    }).then(response => {
+      if (response.status === 200) {
+        response.json().then(data => {
+          onSendMessage(data);
+          this.messageTextInput.value = '';
+        });
+      } else {
+        onSendMessage([]);
+      }
+    });
   }
 
   sendMessageClick() {
@@ -17,8 +36,41 @@ class Hello extends React.Component {
     if (!this.messageTextInput.value.trim() || !this.userTextInput.value) {
       return;
     }
-    onSendMessage(this.userTextInput.value, this.messageTextInput.value);
-    this.messageTextInput.value = '';
+    const block = this.buildBlock(this.userTextInput.value, this.messageTextInput.value);
+    fetch('http://localhost:8080/api/fr/chats', {
+      method: 'post',
+      headers: this.getHeaders(),
+      body: JSON.stringify(block)
+    }).then(response => {
+      if (response.status === 200) {
+        response.json().then(data => {
+          onSendMessage(data);
+          this.messageTextInput.value = '';
+        });
+      } else {
+        this.initChat();
+      }
+    });
+  }
+
+  getHeaders() {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    return headers;
+  }
+
+  buildBlock = (user, message) => {
+    const timestamp = new Date().getTime();
+    let nonce = 0;
+    const lastChatMessage = this.props.chats[this.props.chats.length - 1];
+    const previousHash = lastChatMessage ? lastChatMessage.hash : '';
+    let hash = md5(timestamp + message + user + nonce + previousHash);
+    while (!hash.startsWith('00')) {
+      nonce += 1;
+      hash = md5(timestamp + message + user + nonce + previousHash);
+    }
+    // console.log(hash, nonce);
+    return { message: { message, user, timestamp }, nonce, previousHash };
   }
 
   render() {
@@ -33,11 +85,11 @@ class Hello extends React.Component {
         </div>
         <div className="chatroom">
           <h3>Chat erton</h3>
-          <ul className="chats">
+          {<ul className="chats">
             {chats.map((chat) =>
-              <li>{chat.user} : {chat.message}</li>
+              <li>{chat.message.user} : {chat.message.message}</li>
             )}
-          </ul>
+          </ul>}
           <input type="text" ref={node => this.userTextInput = node} />
           <input type="text" ref={node => this.messageTextInput = node} />
           <button onClick={this.sendMessageClick}>Click</button>
@@ -59,7 +111,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onClick: () => dispatch(helloWorld()),
     reset: () => dispatch(reset()),
-    onSendMessage: (user, chatMessage) => dispatch(sendMessage(user, chatMessage))
+    onSendMessage: (chats) => dispatch(sendMessage(chats))
   }
 }
 

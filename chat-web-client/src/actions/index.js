@@ -14,10 +14,9 @@ export const reset = () => {
   }
 }
 
-export const sendMessage = (user, chatMessage) => {
+export const sendMessage = (chats) => {
   return {
     type: SEND_MESSAGE,
-    chatMessage,
-    user
+    chats,
   }
 }

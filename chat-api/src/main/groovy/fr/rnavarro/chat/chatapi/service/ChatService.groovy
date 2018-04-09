@@ -12,13 +12,17 @@ class ChatService {
     private blockChain = [] as LinkedList<Block>
 
 
-    Flux<Block> getChain(){
+    Flux<Block> getChain() {
         return Flux.fromIterable(blockChain)
     }
 
-    Flux<Block> addBlock(Block block){
+    Flux<Block> addBlock(Block block) {
         def hash = MessageDigest.getInstance("MD5").digest(block.toString().bytes).encodeHex().toString()
-        if(hash.startsWith("00")){
+        if (hash.startsWith("00")) {
+            block.hash = hash
+            if (blockChain) {
+                block.previousHash = blockChain.last.hash
+            }
             blockChain << block
         }
         return Flux.fromIterable(blockChain)

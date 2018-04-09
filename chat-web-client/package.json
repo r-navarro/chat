@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://vaibhavmule.github.io/react-redux-helloworld",
   "dependencies": {
+    "md5-hash": "^1.0.1",
     "prop-types": "^15.6.0",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",

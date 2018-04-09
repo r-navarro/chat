@@ -2,13 +2,12 @@ package fr.rnavarro.chat.chatapi.dto
 
 
 class Block {
-    String message
-    String user
-    Long timestamp
+    Message message
     int nonce
-    Block previous
+    String hash
+    String previousHash
 
     String toString() {
-        return timestamp + message + user + nonce + previous.toString()
+        return message.timestamp + message.message + message.user + nonce + previousHash
     }
 }
