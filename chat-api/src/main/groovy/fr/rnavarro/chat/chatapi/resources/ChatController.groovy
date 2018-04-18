@@ -1,4 +1,4 @@
-package fr.rnavarro.chat.chatapi
+package fr.rnavarro.chat.chatapi.resources
 
 import fr.rnavarro.chat.chatapi.dto.Block
 import fr.rnavarro.chat.chatapi.service.ChatService

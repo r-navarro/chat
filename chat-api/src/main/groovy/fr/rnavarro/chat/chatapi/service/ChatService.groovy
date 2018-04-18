@@ -21,10 +21,15 @@ class ChatService {
         if (hash.startsWith("00")) {
             block.hash = hash
             if (blockChain) {
-                block.previousHash = blockChain.last.hash
+                def lastHash = blockChain.last.hash
+                if(lastHash != block.previousHash) {
+                    throw new BlockException('Wrong block in the chain')
+                }
+                block.previousHash = lastHash
             }
             blockChain << block
+            return Flux.fromIterable(blockChain)
         }
-        return Flux.fromIterable(blockChain)
+        throw new BlockException('Wrong block in the chain')
     }
 }

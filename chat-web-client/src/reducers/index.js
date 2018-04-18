@@ -1,25 +1,26 @@
 import { combineReducers } from 'redux'
-import { HELLO_WORLD, RESET, SEND_MESSAGE } from './../actions'
+import { SHOW_ERROR, SEND_MESSAGE, GET_MESSAGES } from './../actions'
 
 
 let initialState = { message: 'Hello', chats: [], chatMessage: '' }
 
-const helloWorld = (state = initialState, action) => {
+const chat = (state = initialState, action) => {
   switch (action.type) {
-    case HELLO_WORLD:
-      return Object.assign({}, state, { message: 'Hello, World!' })
-    case RESET:
-      return state = initialState
+    case SHOW_ERROR:
+      return Object.assign({}, state, { error: action.error })
+    case GET_MESSAGES:
+      state = Object.assign({}, state, { chats: action.messages || [] });
+      return state
     case SEND_MESSAGE:
-      state = Object.assign({}, state, { chats: action.chats });
+      state = Object.assign({}, state, { chats: action.chats || [] });
       return state
     default:
       return state
   }
 }
 
-const helloReducer = combineReducers({
-  helloWorld
+const chatReducer = combineReducers({
+  chat
 })
 
-export default helloReducer
+export default chatReducer
