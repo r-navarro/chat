@@ -16,12 +16,12 @@ class ChatController {
     ChatService chatService
 
     @GetMapping("/chats")
-    Flux<Block> getAll(){
+    Flux<Block> getAll() {
         return chatService.chain
     }
 
     @PostMapping("/chats")
-    Flux<Block> addBlock(@RequestBody Block block){
+    Flux<Block> addBlock(@RequestBody Block block) {
         return chatService.addBlock(block)
     }
 }

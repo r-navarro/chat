@@ -8,6 +8,6 @@ class Block {
     String previousHash
 
     String toString() {
-        return message.timestamp + message.message + message.user + nonce + previousHash
+        return message.timestamp + message.message + message.user + previousHash + nonce
     }
 }

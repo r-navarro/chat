@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux'
 import { ChatService } from './../services/ChatService'
 import { sendMessage, showError, getMessages } from './../actions'
-import md5 from 'md5-hash'
+import md5 from 'js-md5'
 
 class MessagesSender extends React.Component {
 
@@ -15,7 +15,7 @@ class MessagesSender extends React.Component {
     }
 
     sendMessageClick() {
-        const { onSendMessage, sendError, getMessagesAndShowError } = this.props;
+        const { getMessagesAndShowError } = this.props;
         if (!this.messageTextInput.value.trim() || !this.userTextInput.value) {
             return;
         }
@@ -24,9 +24,8 @@ class MessagesSender extends React.Component {
         chatService.sendMessage(block).then(response => {
             if (response.status === 200) {
                 response.json().then(data => {
-                    onSendMessage(data);
-                    sendError('');
                     this.messageTextInput.value = '';
+                    getMessagesAndShowError(data, '');
                 });
             } else {
                 response.json().then(error => {
@@ -50,12 +49,15 @@ class MessagesSender extends React.Component {
         let nonce = 0;
         const lastChatMessage = this.props.chats[this.props.chats.length - 1];
         const previousHash = lastChatMessage ? lastChatMessage.hash : '';
-        let hash = md5(timestamp + message + user + nonce + previousHash);
+        const concat = timestamp + message + user + previousHash;
+        // const unsignedString = concat.split('').map(char => {return char >= 128 ? char - 256 : char}).join('');
+        const unsignedString = concat;
+        let hash = md5(unsignedString + nonce);
         while (!hash.startsWith('00')) {
             nonce += 1;
-            hash = md5(timestamp + message + user + nonce + previousHash);
+            hash = md5(unsignedString + nonce);
         }
-        // console.log(hash, nonce);
+        console.log(hash, unsignedString + previousHash);
         return { message: { message, user, timestamp }, nonce, previousHash };
     }
 

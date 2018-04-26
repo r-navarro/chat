@@ -11,6 +11,9 @@ export class ChatService {
             method: 'GET',
             headers: this.getHeaders()
         }).then(response => {
+            if(response.status !== 200){
+                return [];
+            }
             return response.json().then(data => {
                 return data;
             });

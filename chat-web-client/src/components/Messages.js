@@ -7,7 +7,8 @@ import { getMessages } from './../actions'
 class Messages extends React.Component {
 
   componentDidMount() {
-    setInterval(() => { this.initChat(); }, 2000);
+    this.initChat();
+    setInterval(() => { this.initChat(); }, 3000);
   }
 
   initChat() {
